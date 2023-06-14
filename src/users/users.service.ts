@@ -17,20 +17,39 @@ export class UsersService {
     return 'This action adds a new user';
   }
 
-  // findAll() {
-  //   return 'find All';
-  // }
-
   async findAll(page, condition): Promise<IUserListRes> {
-    const [users, total] = await this.usersRepository.findAndCount({
-      take: condition.entities,
-      skip: (Number(page) - 1) * condition.entities,
-    });
-    console.log(users.length);
+    const { entities, filter } = condition;
+
+    const list = await this.usersRepository
+      .createQueryBuilder('users_enc')
+      .select([
+        'ugid',
+        'idx as user_uid',
+        'company',
+        `convert_from(decrypt(decode(name,'hex'),'${process.env.ENCRYPTION_KEY}','aes'),'utf8') as user_name`,
+        `convert_from(decrypt(decode(email,'hex'),'${process.env.ENCRYPTION_KEY}','aes'),'utf8') as user_email`,
+        'role',
+        'last_login',
+        'is_lock',
+        'lock_reason',
+        'latest_try_login_date',
+      ])
+      // .from('users_enc', 'u')
+      .take(entities)
+      .skip((Number(page) - 1) * condition.entities)
+      .printSql()
+      .getRawMany();
+
+    const { count } = await this.usersRepository
+      .createQueryBuilder()
+      .select(['COUNT(1)'])
+      .printSql()
+      .getRawOne();
+
     return {
-      data: users,
-      current: page,
-      totalPage: Math.ceil(total / condition.entities),
+      list,
+      current: entities,
+      totalPage: Math.ceil(Number(count) / entities),
     };
   }
 

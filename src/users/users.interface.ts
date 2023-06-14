@@ -1,7 +1,7 @@
 import { User } from './user.entity';
 
 export interface IUserListRes {
-  data: User[];
+  list: User[];
   current: number;
   totalPage: number;
 }
