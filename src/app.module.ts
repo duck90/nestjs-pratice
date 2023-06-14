@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LoggerMiddleware } from './logger.middleware';
+import { SensorGroupModule } from './sensor_group/sensor_group.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { LoggerMiddleware } from './logger.middleware';
       synchronize: false,
     }),
     UsersModule,
+    SensorGroupModule,
   ],
   controllers: [AppController],
   providers: [AppService],
