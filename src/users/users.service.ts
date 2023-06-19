@@ -5,7 +5,9 @@ import { DataSource, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { Sensor_Group } from '../sensor_group/entities/sensor_group.entity';
 import { IUserListRes } from './users.interface';
+import { OrmConfig } from '../ormconfig';
 
 @Injectable()
 export class UsersService {
@@ -21,36 +23,15 @@ export class UsersService {
   async findAll(page, condition): Promise<IUserListRes> {
     const { entities, filter } = condition;
 
-    const list = await this.usersRepository
-      .createQueryBuilder('users_enc')
-      .select([
-        'ugid',
-        'idx as user_uid',
-        'company',
-        `convert_from(decrypt(decode(name,'hex'),'${process.env.ENCRYPTION_KEY}','aes'),'utf8') as user_name`,
-        `convert_from(decrypt(decode(email,'hex'),'${process.env.ENCRYPTION_KEY}','aes'),'utf8') as user_email`,
-        'role',
-        'last_login',
-        'is_lock',
-        'lock_reason',
-        'latest_try_login_date',
-      ])
-      // .from('users_enc', 'u')
-      .take(entities)
-      .skip((Number(page) - 1) * condition.entities)
-      .printSql()
-      .getRawMany();
-
-    const { count } = await this.usersRepository
-      .createQueryBuilder()
-      .select(['COUNT(1)'])
-      .printSql()
-      .getRawOne();
-
+    const [users, total] = await this.usersRepository.findAndCount({
+      take: condition.entities,
+      skip: (Number(page) - 1) * condition.entities,
+    });
+    console.log(users);
     return {
-      list,
-      current: entities,
-      totalPage: Math.ceil(Number(count) / entities),
+      list: users,
+      current: page,
+      totalPage: Math.ceil(total / condition.entities),
     };
   }
 
