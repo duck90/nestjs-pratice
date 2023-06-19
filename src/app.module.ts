@@ -1,32 +1,37 @@
 import { Module, MiddlewareConsumer, Logger } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { UsersModule } from './users/users.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { LoggerMiddleware } from './logger.middleware';
-import { SensorGroupModule } from './sensor_group/sensor_group.module';
+import OrmConfig from 'src/ormconfig';
+// import { LoggerMiddleware } from './logger.middleware';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: '../.env',
     }),
+    // TypeOrmModule.forRootAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: (configService: ConfigService) => OrmConfig,
+    // }),
+    // TypeOrmModule.forRoot(OrmConfig),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.HOST,
-      port: Number(process.env.PORT),
-      username: process.env.DB_NAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB,
+      host: 'localhost',
+      port: 5432,
+      username: 'testadmin',
+      password: '1234',
+      database: 'duck90',
       logging: true,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
     }),
     UsersModule,
-    SensorGroupModule,
   ],
   controllers: [AppController],
   providers: [AppService],
