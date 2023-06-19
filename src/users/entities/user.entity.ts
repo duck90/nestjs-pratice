@@ -7,8 +7,6 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Sensor_Group } from '../../sensor_group/entities/sensor_group.entity';
-
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
