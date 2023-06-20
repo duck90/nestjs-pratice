@@ -22,4 +22,10 @@ export class CreateUserDto {
   @IsNumber()
   @IsNotEmpty()
   role: 1 | 2;
+
+  @IsNotEmpty()
+  password: string;
+
+  @IsNotEmpty()
+  salt: string;
 }

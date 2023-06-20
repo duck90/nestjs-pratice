@@ -16,7 +16,7 @@ export class User {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   age: number;
 
   @Column()
@@ -24,6 +24,12 @@ export class User {
 
   @Column()
   role: 1 | 2;
+
+  @Column()
+  password: string;
+
+  @Column()
+  salt: string;
 
   @CreateDateColumn()
   created_at: Date;
