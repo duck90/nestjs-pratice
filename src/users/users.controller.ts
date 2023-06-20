@@ -8,7 +8,6 @@ import {
   Delete,
   Req,
 } from '@nestjs/common';
-import { Request } from 'express';
 
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,9 +16,17 @@ import { CreateUserDto } from './dto/create-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @Post('new')
+  async create(@Body() createUserDto: CreateUserDto) {
+    try {
+      await this.usersService.create(createUserDto);
+      return Object.assign({
+        statusCode: 200,
+        statusMsg: 'create success',
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   @Post(':page')
@@ -31,8 +38,8 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.usersService.userDetail(+id);
   }
 
   // @Patch(':id')
@@ -41,7 +48,15 @@ export class UsersController {
   // }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  async remove(@Param('id') id: string) {
+    try {
+      await this.usersService.remove(+id);
+      return Object.assign({
+        statusCode: 200,
+        statusMsg: 'delete success',
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
 }

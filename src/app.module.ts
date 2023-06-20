@@ -12,7 +12,7 @@ import OrmConfig from 'src/ormconfig';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '../.env',
+      envFilePath: '.env',
     }),
     // TypeOrmModule.forRootAsync({
     //   imports: [ConfigModule],
@@ -30,6 +30,8 @@ import OrmConfig from 'src/ormconfig';
       logging: true,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
+      migrationsTableName: 'migrations',
+      migrations: ['migrations/*.ts'],
     }),
     UsersModule,
   ],

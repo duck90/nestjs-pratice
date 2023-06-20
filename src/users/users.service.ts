@@ -14,34 +14,57 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    return await this.usersRepository.save({
+      name: createUserDto.name,
+      age: createUserDto.age,
+      email: createUserDto.email,
+      role: createUserDto.role,
+      created_at: new Date(),
+      updated_at: new Date(),
+      deleted_at: null,
+    });
   }
 
   async findAll(page, condition): Promise<IUserListRes> {
     const { entities, filter } = condition;
+    const users = await this.usersRepository
+      .createQueryBuilder()
+      .select(['id', 'name', 'age', 'email', 'role', 'created_at'])
+      .where('deleted_at is null')
+      .take(entities)
+      .skip((Number(page) - 1) * condition.entities)
+      .getRawMany();
 
-    const [users, total] = await this.usersRepository.findAndCount({
-      take: condition.entities,
-      skip: (Number(page) - 1) * condition.entities,
-    });
-    console.log(users);
+    const { count } = await this.usersRepository
+      .createQueryBuilder()
+      .select(['COUNT(1)'])
+      .where('deleted_at is null')
+      .getRawOne();
+
     return {
       list: users,
       current: page,
-      totalPage: Math.ceil(total / condition.entities),
+      totalPage: Math.ceil(count / condition.entities),
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async userDetail(id: number): Promise<User> {
+    return await this.usersRepository.findOne({
+      where: { id },
+    });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    const user = await this.usersRepository.findOne({
+      where: { id },
+    });
+    user.deleted_at = new Date();
+
+    return await this.usersRepository.update(id, user);
   }
 }

@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { IsEmail } from 'class-validator';
 
 @Entity('users')
 export class User {
@@ -21,14 +22,20 @@ export class User {
   @Column()
   email: string;
 
+  @Column()
+  role: 1 | 2;
+
   @CreateDateColumn()
   created_at: Date;
 
   @UpdateDateColumn()
   updated_at: Date;
 
-  @BeforeInsert()
-  async hashPassword() {
-    // this.password = await argon2.hash(this.password);
-  }
+  @Column()
+  deleted_at: Date;
+
+  // @BeforeInsert()
+  // async hashPassword() {
+  //   // this.password = await argon2.hash(this.password);
+  // }
 }
