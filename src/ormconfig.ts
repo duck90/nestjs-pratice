@@ -14,11 +14,11 @@ const typeOrmModuleOptions: TypeOrmModuleOptions = {
 
 export const OrmConfig = {
   ...typeOrmModuleOptions,
-  // migrationsTableName: 'migrations',
-  // migrations: ['migrations/*.ts'],
-  // cli: {
-  //   migrationsDir: 'migrations',
-  // },
+  migrationsTableName: 'migrations',
+  migrations: ['migrations/*.ts'],
+  cli: {
+    migrationsDir: 'migrations',
+  },
 };
 
 export default OrmConfig;
